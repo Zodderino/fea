@@ -28,11 +28,12 @@ function LoginPage() {
     const submitLogin = async (e) => {
         e.preventDefault()
 
-        login({username, token: "token"});
+        const response = await userApi.login({username, password})
 
-        // const response = await userApi.login({username, password})
-
-        navigate("/");
+        if (response) {
+            login({username, token: response.token});
+            navigate("/");
+        }
 
     }
 

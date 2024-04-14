@@ -26,13 +26,12 @@ export default function RegisterPage() {
     }
     const submitRegister = async (e) => {
         e.preventDefault()
+        const response = await userApi.signup({username, password})
 
-        login({username, token: "token"});
-
-        // const response = await userApi.signup({username, password})
-
-        navigate("/");
-
+        if (response) {
+            login({username, token: response.token});
+            navigate("/");
+        }
     }
 
     return (
