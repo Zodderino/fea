@@ -1,19 +1,16 @@
 import React, {useState} from 'react';
-import {
-    MDBContainer,
-    MDBInput,
-    MDBBtn,
-    MDBIcon
-}
-    from 'mdb-react-ui-kit';
 import {useCurrentUser} from "../../context/UserContext";
 
 import * as userApi from "../../api/user"
 import {useNavigate} from "react-router-dom";
+import Notification from "../notification/Notification";
+import {Container, TextField, Button, Link} from "@mui/material";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [notification, setNotification] = useState({text: "", display: false});
     const navigate = useNavigate();
 
     const {login} = useCurrentUser()
@@ -24,49 +21,45 @@ export default function RegisterPage() {
     const onPasswordChange = (e) => {
         setPassword(e.target.value)
     }
+    const onConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value)
+    }
     const submitRegister = async (e) => {
         e.preventDefault()
-        const response = await userApi.signup({username, password})
+        if (password !== confirmPassword) {
+            setNotification({text: "Password do not match", display: true})
+            return
+        }
 
-        if (response) {
+        try {
+            const response = await userApi.signup({username, password})
             login({username, token: response.token});
             navigate("/");
+        } catch (err) {
+            setNotification({text: err?.response?.data?.message, display: true})
         }
     }
 
-    return (
-        <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
+    const marginBottom = {
+        mb: 3
+    }
 
-            <MDBInput value={username} onChange={onUsernameChange} wrapperClass='mb-4' label='Username' id='form1'
+    return (
+        <Container maxWidth="sm" sx={{mt: 10, display: "flex", flexDirection: "column"}}>
+            <Notification notification={notification} />
+
+            <TextField size="small" value={username} onChange={onUsernameChange} sx={marginBottom} label='Username' id='form1'
                       type='email'/>
-            <MDBInput value={password} onChange={onPasswordChange} wrapperClass='mb-4' label='Password' id='form2'
+            <TextField size="small" value={password} onChange={onPasswordChange} sx={marginBottom} label='Password' id='form2'
+                      type='password'/>
+            <TextField size="small" value={confirmPassword} onChange={onConfirmPasswordChange} sx={marginBottom} label='Re-enter Password' id='form3'
                       type='password'/>
 
-            <MDBBtn onClick={submitRegister} className="mb-4">Register</MDBBtn>
+            <Button onClick={submitRegister} variant="contained" sx={marginBottom}>Register</Button>
 
-            <div className="text-center">
-                <p>Already a member? <a href="/login">Login</a></p>
-                <p>or sign up with:</p>
-
-                <div className='d-flex justify-content-between mx-auto' style={{width: '40%'}}>
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='facebook-f' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='twitter' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='google' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='github' size="sm"/>
-                    </MDBBtn>
-
-                </div>
-            </div>
-        </MDBContainer>
+            <Container item className="text-center">
+                Already a member? <Link href="/login">Login</Link>
+            </Container>
+        </Container>
     );
 }

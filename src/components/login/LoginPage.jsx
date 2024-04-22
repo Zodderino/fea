@@ -1,21 +1,15 @@
 import React, {useState} from 'react';
-import {
-    MDBContainer,
-    MDBInput,
-    MDBCheckbox,
-    MDBBtn,
-    MDBIcon
-}
-    from 'mdb-react-ui-kit';
 import {useCurrentUser} from "../../context/UserContext";
-
 import * as userApi from "../../api/user"
 import {useNavigate} from "react-router-dom";
+import Notification from "../notification/Notification";
+import {Container, TextField, Button, Link} from "@mui/material";
 
 function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [notification, setNotification] = useState({text: "", display: false});
 
     const {login} = useCurrentUser()
 
@@ -28,54 +22,34 @@ function LoginPage() {
     const submitLogin = async (e) => {
         e.preventDefault()
 
-        const response = await userApi.login({username, password})
-
-        if (response) {
+        try {
+            const response = await userApi.login({username, password})
             login({username, token: response.token});
             navigate("/");
+        } catch (err) {
+            setNotification({text: err.response.data.message, display: true})
         }
+    }
 
+    const marginBottom = {
+        mb: 3
     }
 
     return (
-        <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
+        <Container maxWidth="sm" sx={{mt: 10, display: "flex", flexDirection: "column"}}>
+            <Notification notification={notification} />
 
-            <MDBInput value={username} onChange={onUsernameChange} wrapperClass='mb-4' label='Username' id='form1'
+            <TextField size="small" value={username} onChange={onUsernameChange} sx={marginBottom} label='Username' id='form1'
                       type='email'/>
-            <MDBInput value={password} onChange={onPasswordChange} wrapperClass='mb-4' label='Password' id='form2'
+            <TextField size="small" value={password} onChange={onPasswordChange} sx={marginBottom} label='Password' id='form2'
                       type='password'/>
 
-            <div className="d-flex justify-content-between mx-3 mb-4">
-                <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me'/>
-                <a href="!#">Forgot password?</a>
-            </div>
+            <Button onClick={submitLogin} variant="contained" sx={marginBottom}>Sign in</Button>
 
-            <MDBBtn onClick={submitLogin} className="mb-4">Sign in</MDBBtn>
-
-            <div className="text-center">
-                <p>Not a member? <a href="/register">Register</a></p>
-                <p>or login with:</p>
-
-                <div className='d-flex justify-content-between mx-auto' style={{width: '40%'}}>
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='facebook-f' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='twitter' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='google' size="sm"/>
-                    </MDBBtn>
-
-                    <MDBBtn tag='a' color='none' className='m-1' style={{color: '#1266f1'}}>
-                        <MDBIcon fab icon='github' size="sm"/>
-                    </MDBBtn>
-
-                </div>
-            </div>
-        </MDBContainer>
+            <Container item className="text-center">
+                Not a member? <Link href="/register">Register</Link>
+            </Container>
+        </Container>
     );
 }
 
