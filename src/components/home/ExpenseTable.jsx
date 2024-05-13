@@ -1,27 +1,29 @@
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {useEffect, useState} from "react";
+import * as expenseApi from "../../api/expense"
+import {useCurrentUser} from "../../context/UserContext";
+import * as timeUtil from "../../utils/time";
 
-export default function ExpenseTable(props) {
-    // This will be from api
-    const data = [
-        {
-            "time": "2023-08-15T15:00:10.778Z",
-            "name": "Shell Fuel",
-            "category": "Fuel",
-            "amount": 297.02
-        },
-        {
-            "time": "2023-01-25T02:24:38.453Z",
-            "name": "Shell Grocery",
-            "category": "Grocery",
-            "amount": 2572.66
-        },
-        {
-            "time": "2023-07-03T06:49:00.670Z",
-            "name": "METU Education",
-            "category": "Education",
-            "amount": 6603.44
+export default function ExpenseTable({startDate, endDate}) {
+    const [data, setData] = useState([])
+    const {currentUser} = useCurrentUser();
+
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await expenseApi.getExpenseList({
+                startDate: timeUtil.fromJSDateToISODate(startDate.toDate()),
+                endDate: timeUtil.fromJSDateToISODate(endDate.toDate()),
+                token: currentUser.token
+            });
+
+            if (response) {
+                setData(response)
+            }
         }
-    ]
+
+        fetchData()
+    }, [startDate, endDate, currentUser.token]);
 
     return (
         <Table>
@@ -36,7 +38,7 @@ export default function ExpenseTable(props) {
             <TableBody>
                 {
                     data.map((item, index) => <TableRow key={index}>
-                            <TableCell align="center">{item.time}</TableCell>
+                            <TableCell align="center">{item.expenseDate}</TableCell>
                             <TableCell align="center">{item.name}</TableCell>
                             <TableCell align="center">{item.category}</TableCell>
                             <TableCell align="center">{item.amount}</TableCell>

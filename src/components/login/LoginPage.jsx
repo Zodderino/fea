@@ -27,7 +27,7 @@ function LoginPage() {
             login({username, token: response.token});
             navigate("/");
         } catch (err) {
-            setNotification({text: err.response.data.message, display: true})
+            setNotification({text: err?.response?.data?.message, display: true})
         }
     }
 

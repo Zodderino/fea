@@ -8,6 +8,7 @@ import * as timeUtil from "../../utils/time";
 import dayjs from "dayjs";
 import { Container, Typography} from "@mui/material";
 import FileUpload from "./FileUpload";
+import {useState} from "react";
 
 export default function Home() {
     const {currentUser} = useCurrentUser()
@@ -16,6 +17,17 @@ export default function Home() {
         "justifyContent": "center",
         "alignItems": "center",
         mb: 3
+    }
+
+    const [startDate, setStartDate] = useState(dayjs(timeUtil.lastWeekTime().toISODate()));
+    const [endDate, setEndDate] = useState(dayjs(timeUtil.todayTime().toISODate()))
+
+    const onStartDateChange = (event) => {
+        setStartDate(event)
+    }
+
+    const onEndDateChange = (event) => {
+        setEndDate(event)
     }
 
     return (
@@ -41,14 +53,14 @@ export default function Home() {
                     </Container>
                     <Container item sx={rowStyle}>
                         <Container item>
-                            <DatePicker label="Start date" value={dayjs(timeUtil.yesterdayTime().toISODate())}/>
+                            <DatePicker label="Start date" value={startDate} onChange={onStartDateChange} />
                         </Container>
                         <Container>
-                            <DatePicker label="End date" value={dayjs(timeUtil.todayDate().toISODate())}/>
+                            <DatePicker label="End date" value={endDate} onChange={onEndDateChange} />
                         </Container>
                     </Container>
                     <Container>
-                        <ExpenseTable/>
+                        <ExpenseTable startDate={startDate} endDate={endDate} />
                     </Container>
                 </Container>
                 <Container sx={{...rowStyle, flexDirection: "column"}}>

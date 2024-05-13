@@ -1,9 +1,13 @@
 import {DateTime} from 'luxon';
 
-export function todayDate() {
+export function todayTime() {
     return DateTime.now()
 }
 
-export function yesterdayTime() {
-    return todayDate().minus({day: 1});
+export function lastWeekTime() {
+    return todayTime().minus({day: 7});
+}
+
+export function fromJSDateToISODate(time) {
+    return DateTime.fromJSDate(time).toISODate()
 }
