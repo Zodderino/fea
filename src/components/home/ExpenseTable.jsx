@@ -4,7 +4,7 @@ import * as expenseApi from "../../api/expense"
 import {useCurrentUser} from "../../context/UserContext";
 import * as timeUtil from "../../utils/time";
 
-export default function ExpenseTable({startDate, endDate}) {
+export default function ExpenseTable({startDate, endDate, shouldReload}) {
     const [data, setData] = useState([])
     const {currentUser} = useCurrentUser();
 
@@ -23,7 +23,7 @@ export default function ExpenseTable({startDate, endDate}) {
         }
 
         fetchData()
-    }, [startDate, endDate, currentUser.token]);
+    }, [startDate, endDate, currentUser.token, shouldReload]);
 
     return (
         <Table>

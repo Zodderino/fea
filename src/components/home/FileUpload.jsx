@@ -17,7 +17,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-export default function FileUpload() {
+export default function FileUpload({callReload}) {
     const [notification, setNotification] = useState({text: "", display: false});
     const {currentUser} = useCurrentUser()
 
@@ -26,7 +26,7 @@ export default function FileUpload() {
 
         try {
             await expenseApi.uploadExpense({file, token: currentUser.token})
-            window.location.reload()
+            callReload()
         } catch (err) {
             setNotification({display: true, text: err?.response?.data?.message ?? "Internal Server Error"})
         }

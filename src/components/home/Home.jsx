@@ -12,6 +12,7 @@ import {useState} from "react";
 
 export default function Home() {
     const {currentUser} = useCurrentUser()
+    const [shouldReload, setShouldReload] = useState(false)
     const rowStyle = {
         "display": "flex",
         "justifyContent": "center",
@@ -30,6 +31,14 @@ export default function Home() {
         setEndDate(event)
     }
 
+    const callReload = () => {
+        setShouldReload(true)
+        
+        setTimeout(() => {
+            setShouldReload(false)
+        }, 500)
+    }
+
     return (
         <>
             <NavBar/>
@@ -43,7 +52,7 @@ export default function Home() {
                     You may upload your financial expense
                 </Container>
                 <Container sx={rowStyle}>
-                    <FileUpload />
+                    <FileUpload callReload={callReload} />
                 </Container>
                 <Container sx={{...rowStyle, flexDirection: "column", textAlign: "center"}}>
                     <Container sx={{mb: 4, mt: 5}}>
@@ -60,7 +69,7 @@ export default function Home() {
                         </Container>
                     </Container>
                     <Container>
-                        <ExpenseTable startDate={startDate} endDate={endDate} />
+                        <ExpenseTable startDate={startDate} endDate={endDate} shouldReload={shouldReload} />
                     </Container>
                 </Container>
                 <Container sx={{...rowStyle, flexDirection: "column"}}>
