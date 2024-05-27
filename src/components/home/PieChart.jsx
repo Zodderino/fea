@@ -1,28 +1,26 @@
 import Chart from "chart.js/auto"
-import {useEffect, useRef} from "react";
+import { useEffect, useRef } from "react";
+import * as expenseUtil from "../../utils/expense"
+import * as formatUtil from "../../utils/format"
 
-export default function PieChart() {
-    const data = {
-        labels: [
-            'Red',
-            'Blue',
-            'Yellow'
-        ],
-        datasets: [{
-            label: 'My First Dataset',
-            data: [300, 50, 100],
-            backgroundColor: [
-                'rgb(255, 99, 132)',
-                'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'
-            ],
-            hoverOffset: 4
-        }]
-    };
+export default function PieChart({ data: rawData }) {
     const canvasRef = useRef(null)
     const chartRef = useRef(null)
 
     useEffect(() => {
+        const groupedByData = formatUtil.groupByKey(rawData, 'category')
+        const amounts = expenseUtil.getTotalAmounts(groupedByData)
+        const labels = Object.keys(groupedByData)
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Expense dataset',
+                data: amounts,
+                hoverOffset: 4
+            }]
+        };
+
         if (!chartRef.current) {
             chartRef.current = new Chart(canvasRef.current, {
                 type: 'pie',
@@ -33,9 +31,8 @@ export default function PieChart() {
                         legend: {
                             position: 'top',
                         },
-                        title: {
-                            display: false,
-                            text: 'Chart.js Pie Chart'
+                        colors: {
+                            forceOverride: true
                         }
                     }
                 },
@@ -43,13 +40,15 @@ export default function PieChart() {
             return;
         }
 
+        chartRef.current.data = data
+
         chartRef.current.update();
 
-    }, [data]);
+    }, [rawData]);
 
     return (
-        <div>
-            <canvas id="pieChart" ref={canvasRef}/>
+        <div style={{ width: "60%", height: "60%", marginTop: "-25px" }}>
+            <canvas id="pieChart" ref={canvasRef} />
         </div>
     )
 }

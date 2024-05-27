@@ -11,3 +11,15 @@ export function lastWeekTime() {
 export function fromJSDateToISODate(time) {
     return DateTime.fromJSDate(time).toISODate()
 }
+
+function getDateTimeFromISO(time) {
+    return DateTime.fromISO(time)
+}
+
+export function getUnixInteger(time) {
+    return getDateTimeFromISO(time).toUnixInteger()
+}
+
+export function getYearMonth(time) {
+    return getDateTimeFromISO(time).toFormat("yyyy-MM")
+}

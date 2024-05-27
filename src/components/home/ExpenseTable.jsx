@@ -1,29 +1,6 @@
-import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import {useEffect, useState} from "react";
-import * as expenseApi from "../../api/expense"
-import {useCurrentUser} from "../../context/UserContext";
-import * as timeUtil from "../../utils/time";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
-export default function ExpenseTable({startDate, endDate, shouldReload}) {
-    const [data, setData] = useState([])
-    const {currentUser} = useCurrentUser();
-
-
-    useEffect(() => {
-        async function fetchData() {
-            const response = await expenseApi.getExpenseList({
-                startDate: timeUtil.fromJSDateToISODate(startDate.toDate()),
-                endDate: timeUtil.fromJSDateToISODate(endDate.toDate()),
-                token: currentUser.token
-            });
-
-            if (response) {
-                setData(response)
-            }
-        }
-
-        fetchData()
-    }, [startDate, endDate, currentUser.token, shouldReload]);
+export default function ExpenseTable({ data }) {
 
     return (
         <Table>
@@ -38,11 +15,11 @@ export default function ExpenseTable({startDate, endDate, shouldReload}) {
             <TableBody>
                 {
                     data.map((item, index) => <TableRow key={index}>
-                            <TableCell align="center">{item.expenseDate}</TableCell>
-                            <TableCell align="center">{item.name}</TableCell>
-                            <TableCell align="center">{item.category}</TableCell>
-                            <TableCell align="center">{item.amount}</TableCell>
-                        </TableRow>
+                        <TableCell align="center">{item.expenseDate}</TableCell>
+                        <TableCell align="center">{item.name}</TableCell>
+                        <TableCell align="center">{item.category}</TableCell>
+                        <TableCell align="center">{item.amount}</TableCell>
+                    </TableRow>
                     )
                 }
             </TableBody>

@@ -1,49 +1,56 @@
 import Chart from "chart.js/auto"
-import {useEffect, useRef} from "react";
+import { useEffect, useRef } from "react";
+import * as timeUtil from "../../utils/time"
+import * as formatUtil from "../../utils/format"
+import * as expenseUtil from "../../utils/expense"
 
-export default function CombinedBarLine() {
-    const labels = ["January", "February", "March", "April", "May", "June", "July"]
-
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: 'Dataset 1',
-                data: [50, 70, 100, 20, 50, 60, 20],
-                stack: 'combined',
-                type: 'bar'
-            },
-            {
-                label: 'Dataset 2',
-                data: [60, 80, 90, 10, 70, 50, 10],
-                stack: 'combined'
-            }
-        ]
-    };;
+export default function CombinedBarLine({ data }) {
     const canvasRef = useRef(null)
     const chartRef = useRef(null)
 
     useEffect(() => {
+        const addMonthYearToData = data.sort(
+            (a, b) => timeUtil.getUnixInteger(a.expenseDate) - timeUtil.getUnixInteger(b.expenseDate)
+        ).map(item => {
+            const yearMonth = timeUtil.getYearMonth(item.expenseDate)
+            return { ...item, yearMonth }
+        })
+
+        const groupedBy = formatUtil.groupByKey(addMonthYearToData, 'yearMonth')
+
+        const expensesMonthly = expenseUtil.getTotalAmounts(groupedBy)
+        const averageExpenseMonthly = expenseUtil.getAverageAmount(groupedBy)
+        const labels = Object.keys(groupedBy)
+
+        const formattedData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Monthly Expense Total',
+                    data: expensesMonthly,
+                    type: 'bar'
+                },
+                {
+                    label: 'Monthly Expense Average',
+                    data: averageExpenseMonthly,
+                    type: 'line',
+                    order: 1
+                },
+            ]
+        };;
+
         if (!chartRef.current) {
             chartRef.current = new Chart(canvasRef.current, {
-                type: 'line',
-                data: data,
+                type: 'bar',
+                data: formattedData,
                 options: {
-                    plugins: {
-                        title: {
-                            display: false,
-                            text: 'Chart.js Stacked Line/Bar Chart'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            stacked: true
-                        }
-                    }
+                    responsive: true,
                 },
             })
             return;
         }
+
+        chartRef.current.data = formattedData
 
         chartRef.current.update();
 
@@ -51,7 +58,7 @@ export default function CombinedBarLine() {
 
     return (
         <div style={{ width: "100%", height: "100%" }}>
-            <canvas id="combinedBarLine" ref={canvasRef}/>
+            <canvas id="combinedBarLine" ref={canvasRef} />
         </div>
     )
 
