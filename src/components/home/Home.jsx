@@ -41,7 +41,7 @@ export default function Home() {
             if (err?.response?.status === HttpStatusCode.Forbidden) {
                 logout()
             }
-        } 
+        }
     }
 
     useEffect(() => {
@@ -60,16 +60,16 @@ export default function Home() {
     return (
         <>
             <NavBar />
-            <Container maxWidth="md" sx={{ mt: 15 }}>
-                <Container item sx={rowStyle}>
+            <Container id="printable-content" maxWidth="md" sx={{ mt: 15 }}>
+                <Container id="greeter" item sx={rowStyle}>
                     <Typography variant='h4'>
                         Welcome, {currentUser.username}
                     </Typography>
                 </Container>
-                <Container item sx={rowStyle}>
+                <Container id="upload-title" item sx={rowStyle}>
                     You may upload your financial expense
                 </Container>
-                <Container sx={rowStyle}>
+                <Container id="upload-button" sx={rowStyle}>
                     <FileUpload fetchData={fetchData} />
                 </Container>
                 <Container sx={{ ...rowStyle, flexDirection: "column", textAlign: "center" }}>
@@ -88,7 +88,7 @@ export default function Home() {
                     </Container>
                     {data.length ? <Container>
                         <ExpenseTable data={data} />
-                    </Container> : <Container>Sorry, no matching records found<br/>Please change time filters or upload expenses</Container>}
+                    </Container> : <Container>Sorry, no matching records found<br />Please change time filters or upload expenses</Container>}
                 </Container>
                 {data.length ? <>
                     <Container sx={{ ...rowStyle, flexDirection: "column" }}>

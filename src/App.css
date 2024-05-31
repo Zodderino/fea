@@ -28,6 +28,18 @@
   color: #61dafb;
 }
 
+@media print {
+  #navbar, #export-button, #greeter, #upload-title, #upload-button {
+    display: none;
+  }
+
+  #printable-content {
+    position: absolute;
+    top: -125px;
+    left: 0;
+  }
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
